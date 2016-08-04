@@ -1,0 +1,157 @@
+<html>
+<head>
+<title></title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type ="text/javascript">
+        $(document).ready(function (){
+            // this triggers the connection event in our server!
+            var socket = io.connect();
+            // we'll write all the socket stuff after the above line!
+
+
+            $('#name-form').submit(function(e){
+                    e.preventDefault();
+
+                    $('#enter-name').fadeOut('slow');
+
+                    setTimeout(function(){  $('#chat-view').fadeIn('slow'); }, 700);
+
+                   var name = $('#name').val();
+
+                    socket.emit("got_a_new_user", {name: name});
+                    
+                    console.log(name);
+                    
+                })
+
+
+
+
+            // $('#count_form').submit(function(e){
+            //         e.preventDefault();
+
+            //         socket.emit("click_form", {value: 1});
+                    
+            //         console.log("+1");
+                    
+            //     })
+
+            // var users = "";
+            socket.on('new_user_in_chat', function (data){
+
+              
+                console.log('The server says: ' + data.id);
+                console.log('The server says: ' + data.name);
+
+                var id = data.id;
+                var user = data.name;
+                var all_users = data.names;
+
+                // users.id = user;
+
+                console.log(all_users);
+
+
+                // $( "span.response" ).html( "<h4>" + clicks + "</h4>" );
+            });
+
+            
+        })
+    </script>
+</head>
+<body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a href="/">
+          <h1 class="navbar-brand">
+            Group Chat
+          </h1>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="col-sm-6 col-sm-offset-3 text-center enter-name" id="enter-name" style="border: 2px solid #eee; border-radius: 5px">
+      <h5>Please enter your name</h5>
+      <form class="form-inline" id="name-form"> 
+        <input type="text" name="name" id="name" class="form-control">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+
+
+
+
+
+    <div class="chat-view" id="chat-view" style="display: none">
+      <div class="col-sm-12 text-center">
+        <h3>Group Chat</h3>
+      </div>
+      <div class="col-sm-9 text-box" style="border: 2px solid #eee; border-radius: 5px; min-height: 400px; padding: 20px">     
+        <p>Hi</p>
+        <p>hey there</p>
+      </div>
+      <div class="col-sm-2 col-sm-offset-1 users" style="border: 2px solid #eee; border-radius: 5px">
+        <h5>Users Online:</h5>
+        <p>Chad</p>
+        <p>Chad</p>
+        <p>Chad</p>
+      </div>
+      <div class="col-sm-9 chat-form" style="margin-top: 10px;">     
+        <form class="form-inline" id="chat-form"> 
+          <input type="text" name="message" class="form-control">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+      
+    </div>
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- <div>Group Chattttttt</div>
+      <div class="col-sm-6 col-sm-offset-3 text-center">
+        The button has been clicked <span class="response"></span> times
+      </div>
+
+      <form id="count_form">
+        <div class="col-sm-12 text-center button">
+          <button type="submit" class="btn btn-primary">Click Here</button>
+        </div> 
+      </form>
+
+      <form id="reset_form">
+        <div class="col-sm-12 text-center reset">
+          <button type="submit" class="btn btn-danger">Reset</button>
+        </div>   
+      </form>       
+
+      <div class="response"></div> -->
+
+</body>
+</html>
