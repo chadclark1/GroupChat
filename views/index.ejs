@@ -2,7 +2,7 @@
 <head>
 <title></title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
     <script type ="text/javascript">
@@ -24,20 +24,14 @@
                     socket.emit("got_a_new_user", {name: name});
                     
                     console.log(name);
+
+                    return false;
                     
                 })
 
 
 
 
-            // $('#count_form').submit(function(e){
-            //         e.preventDefault();
-
-            //         socket.emit("click_form", {value: 1});
-                    
-            //         console.log("+1");
-                    
-            //     })
 
             // var users = "";
             socket.on('new_user_in_chat', function (data){
@@ -48,15 +42,84 @@
 
                 var id = data.id;
                 var user = data.name;
-                var all_users = data.names;
+                var all_users = data.users;
 
                 // users.id = user;
 
                 console.log(all_users);
 
+                var online_users = document.getElementById("online-users");
+                online_users.innerHTML = '';
+
+                $('.text-box').val('');
+                for (var prop in all_users) {
+                  $('#online-users').append('<p>' + all_users[prop] + '</p>');
+                  console.log("obj." + prop + " = " + all_users[prop]);
+                }
+
+                // $('.users').html('<p>' + all_users + '</p>');
+
 
                 // $( "span.response" ).html( "<h4>" + clicks + "</h4>" );
             });
+
+            socket.on('disconnected_user', function (data){
+
+              
+                console.log('The server says: user disconnected' + data.users);
+
+                var all_users = data.users;
+
+                console.log(all_users);
+
+
+
+                var online_users = document.getElementById("online-users");
+                online_users.innerHTML = '';
+                for (var prop in all_users) {
+                  $('#online-users').append('<p>' + all_users[prop] + '</p>');
+                  console.log("obj." + prop + " = " + all_users[prop]);
+                }
+
+                // $('.users').html('<p>' + all_users + '</p>');
+
+
+                // $( "span.response" ).html( "<h4>" + clicks + "</h4>" );
+            });
+
+
+            $('#chat-form').submit(function(e){
+                    e.preventDefault();
+
+
+                   var message = $('#message').val();
+
+                    socket.emit("send_message", {message: message});
+                    
+                    console.log("The message is " + message);
+                    // console.log("The name is " + name);
+
+                    $('#message').val('');
+
+                    return false;
+
+
+                    
+                })
+
+
+            socket.on('new_message', function (data){
+
+              
+                // console.log('The server says: ' + data.name);
+                // console.log('The server says: ' + data.message);
+
+  
+                  $('.text-box').append('<p>' + data.name + " : " + data.message + '</p>');
+
+            });
+
+
 
             
         })
@@ -85,26 +148,23 @@
     </div>
 
 
-
-
-
     <div class="chat-view" id="chat-view" style="display: none">
       <div class="col-sm-12 text-center">
         <h3>Group Chat</h3>
       </div>
       <div class="col-sm-9 text-box" style="border: 2px solid #eee; border-radius: 5px; min-height: 400px; padding: 20px">     
-        <p>Hi</p>
-        <p>hey there</p>
+        <!-- <p>Hi</p>
+        <p>hey there</p> -->
       </div>
       <div class="col-sm-2 col-sm-offset-1 users" style="border: 2px solid #eee; border-radius: 5px">
         <h5>Users Online:</h5>
-        <p>Chad</p>
-        <p>Chad</p>
-        <p>Chad</p>
+        <div id="online-users"></div>
+        
+<% %>
       </div>
       <div class="col-sm-9 chat-form" style="margin-top: 10px;">     
         <form class="form-inline" id="chat-form"> 
-          <input type="text" name="message" class="form-control">
+          <input type="text" name="message" id="message" class="form-control">
           <button type="submit" class="btn btn-primary">Submit</button>
         </form>
       </div>

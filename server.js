@@ -37,14 +37,14 @@ var server = app.listen(8000, function() {
 // variable. unless we have the server variable, this line will not work!!
 var io = require('socket.io').listen(server)
 
-
+var names = {};
 
 // Whenever a connection event happens (the connection event is built in) run the following code
 io.sockets.on('connection', function (socket) {
   console.log(socket.id);
   //all the socket code goes in here!
 
-  var names = [];
+ 
 
   // New code added here ->
 	socket.on("got_a_new_user", function (data){
@@ -55,9 +55,46 @@ io.sockets.on('connection', function (socket) {
 
         names[id] = data.name;
 
-        io.emit('new_user_in_chat', {id: id, name: data.name, users: names});
+        io.emit('new_user_in_chat', 
+          {id: id, 
+          name: data.name, 
+          users: names
+        });
 
         console.log(names);
+
+    })
+
+  socket.on('disconnect', function () {
+        console.log(socket.id);
+        var id = socket.id;
+        delete names[id];
+
+        io.emit('disconnected_user', 
+          { 
+          users: names
+        });
+
+        console.log(names);
+
+    });
+
+
+  socket.on("send_message", function (data){
+        console.log('Got a new message!  Message: ' + data.message);
+
+        var id = socket.id;
+        var name = names[id];
+
+        // name = names[id];
+        console.log("the message came from " + name);
+
+        io.emit('new_message', 
+          {message: data.message, 
+          name: name
+        });
+
+        // console.log(names);
 
     })
 
